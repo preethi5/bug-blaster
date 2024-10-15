@@ -12,13 +12,24 @@ export default function ticketReducer(state, action) {
         tickets: state.tickets.map((tic) =>
           tic.id === action.payload.id ? action.payload : tic
         ),
+        editTicket: null,
       };
 
     case "DELETE_TICKET":
-      return {
-        ...state,
-        tickets: state.tickets.filter((tic) => tic.id !== action.payload.id),
-      };
+      // if we r trying to delete and edit the same ticket
+      if (state.editTicket && state.editTicket.id === action.payload.id) {
+        //alert("Editing ticket can't be deleted")
+        return {
+          ...state,
+          tickets: state.tickets.filter((tic) => tic.id !== action.payload.id),
+          editTicket: null,
+        };
+      } else {
+        return {
+          ...state,
+          tickets: state.tickets.filter((tic) => tic.id !== action.payload.id),
+        };
+      }
 
     // Like isEdit. which ticket is being edited
     case "SET_EDIT":
@@ -31,6 +42,12 @@ export default function ticketReducer(state, action) {
       return {
         ...state,
         editTicket: null,
+      };
+
+    case "SET_SORT":
+      return {
+        ...state,
+        sortPref: action.payload,
       };
     default:
       return state;
